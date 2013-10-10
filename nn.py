@@ -14,7 +14,7 @@ def normalized(func):
     min_value = min(func(word) for dataset in data.values() for word in dataset)
     @wraps(func)
     def new_func(word):
-        return (func(word) - min_value) / (max_value - min_value)
+        return (func(word) - min_value) / float(max_value - min_value)
     return new_func
 
 @normalized
@@ -50,7 +50,6 @@ def show_correct(test_neuron, dataset):
 def find_best_weights(n, dataset, funcs):
     return max((evaluate(neuron(weights), dataset), weights) for weights in [random_weights(*funcs) for _ in range(n)])
 
-
 test_data = zip(data['english'], repeat(True)) + zip(data['spanish'], repeat(False)) + zip(data['nonsense'], repeat(False))
 
 def one_example():
@@ -58,18 +57,20 @@ def one_example():
     print evaluate(english_detector, test_data)
     show_correct(english_detector, test_data)
 
-score, weights = find_best_weights(1000, test_data,
-        [ratio_vowels,
-         num_letters,
-         ratio_of_letters('a'),
-         ratio_of_letters('q'),
-         ratio_of_letters('i'),
-         ratio_of_letters('o'),
-         ratio_of_letters('u'),
-         ratio_of_letters('w'),
-        ])
+if __name__ == '__main__':
 
-print score
-pprint(weights)
-show_correct(neuron(weights), test_data)
+    score, weights = find_best_weights(1000, test_data,
+            [ratio_vowels,
+             num_letters,
+             ratio_of_letters('a'),
+             ratio_of_letters('q'),
+             ratio_of_letters('i'),
+             ratio_of_letters('o'),
+             ratio_of_letters('u'),
+             ratio_of_letters('w'),
+            ])
+
+    print score
+    pprint(weights)
+    show_correct(neuron(weights), test_data)
 
