@@ -26,7 +26,6 @@ def num_letters(word):
     return len(word)
 
 def ratio_of_letters(letter):
-    @normalized
     def ratio_letters(word):
         return word.lower().count(letter) / float(len(word))
     ratio_letters.__name__ = "ratio_of_'%s's" % letter
@@ -56,6 +55,15 @@ def one_example():
     english_detector = neuron({ratio_vowels: 1, num_letters: -.1, ratio_of_letters('a'): 1})
     print evaluate(english_detector, test_data)
     show_correct(english_detector, test_data)
+
+def permute(weights):
+    """Returns a list of weights slightly moved from the input weights"""
+    weight_sets = []
+    for key, weight in weights.items():
+        d = weights.copy()
+        d[key] = weight + max(.1, abs(weight/3))
+        weight_sets.append()
+        print key
 
 if __name__ == '__main__':
 
