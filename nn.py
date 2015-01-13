@@ -1,12 +1,21 @@
+# -*- coding: utf-8 -*-
 import random
-from fmtstr.fmtfuncs import red, green
 from functools import wraps
 from itertools import repeat
 from pprint import pprint
 
+red = lambda msg: '\x1b[31m%s\x1b[39m' % msg
+green = lambda msg: '\x1b[32m%s\x1b[39m' % msg
+
 data = {'spanish':['hola', 'iglesias', 'tonto', 'biblioteca'],
-        'english':['hello', 'church', 'stupid', 'library'],
-        'nonsense':['qwerty', 'uiop', 'asdf', 'zxcv']}
+        'english':['hello', 'church', 'stupid', 'library']}
+training_data = zip(data['english'], repeat(True)) + zip(data['spanish'], repeat(False))
+
+words = 'El Gobierno español ha enviado una queja a la Embajada del Reino Unido en España por las inaceptables acusaciones del ministro principal de Gibraltar'.split()
+eng_words = 'The spokesman outlined the concerns the president has about Republican attitudes even if such an agreement is reached'.split()
+test_data = (zip(eng_words, repeat(True)) +
+             zip(words, repeat(False)))
+
 
 def normalized(func):
     """Makes the domain of a function into 0 to 1"""
@@ -49,12 +58,10 @@ def show_correct(test_neuron, dataset):
 def find_best_weights(n, dataset, funcs):
     return max((evaluate(neuron(weights), dataset), weights) for weights in [random_weights(*funcs) for _ in range(n)])
 
-test_data = zip(data['english'], repeat(True)) + zip(data['spanish'], repeat(False)) + zip(data['nonsense'], repeat(False))
-
 def one_example():
     english_detector = neuron({ratio_vowels: 1, num_letters: -.1, ratio_of_letters('a'): 1})
-    print evaluate(english_detector, test_data)
-    show_correct(english_detector, test_data)
+    print evaluate(english_detector, training_data)
+    show_correct(english_detector, training_data)
 
 def permute(weights):
     """Returns a list of weights slightly moved from the input weights"""
@@ -67,7 +74,7 @@ def permute(weights):
 
 if __name__ == '__main__':
 
-    score, weights = find_best_weights(1000, test_data,
+    score, weights = find_best_weights(1000, training_data,
             [ratio_vowels,
              num_letters,
              ratio_of_letters('a'),
@@ -75,10 +82,9 @@ if __name__ == '__main__':
              ratio_of_letters('i'),
              ratio_of_letters('o'),
              ratio_of_letters('u'),
-             ratio_of_letters('w'),
             ])
 
-    print score
-    pprint(weights)
     show_correct(neuron(weights), test_data)
+    pprint(weights)
+    print score
 
